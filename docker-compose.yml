@@ -82,6 +82,25 @@ services:
     depends_on:
       - rabbitmq
 
+  acquisition-marketing-service:
+    build: ./backend/acquisition-marketing-service
+    ports:
+      - "8004:8004"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/acquisition-marketing
+      - EMAIL_HOST=smtp.example.com
+      - EMAIL_PORT=587
+      - EMAIL_USER=dummy-user
+      - EMAIL_PASSWORD=dummy-password
+      - EMAIL_SECURE=false
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - GOOGLE_ADS_API_KEY=dummy-key
+      - FACEBOOK_ADS_API_KEY=dummy-key
+    depends_on:
+      - mongodb
+      - rabbitmq
+      
   mongodb:
     image: mongo:6.0-focal
     ports:
