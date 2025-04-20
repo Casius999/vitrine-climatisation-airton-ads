@@ -4,8 +4,11 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ConfigProvider } from './contexts/ConfigContext';
 import { BookingProvider } from './contexts/BookingContext';
+import { MarketingProvider } from './contexts/MarketingContext';
 import HomePage from './pages/HomePage';
 import ConfirmationPage from './pages/ConfirmationPage';
+import AdTrackingPixels from './components/AcquisitionMarketingModule/AdTrackingPixels';
+import ConversionTracking from './components/AcquisitionMarketingModule/ConversionTracking';
 
 // Thème personnalisé pour l'application
 const theme = createTheme({
@@ -82,17 +85,24 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <ConfigProvider>
-        <BookingProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/confirmation" element={<ConfirmationPage />} />
-              {/* Ajouter d'autres routes si nécessaire */}
-            </Routes>
-          </Router>
-        </BookingProvider>
-      </ConfigProvider>
+      {/* Intégration des pixels de tracking marketing */}
+      <AdTrackingPixels />
+      <ConversionTracking />
+      
+      {/* Fournisseurs de contexte pour l'application */}
+      <MarketingProvider>
+        <ConfigProvider>
+          <BookingProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/confirmation" element={<ConfirmationPage />} />
+                {/* Ajouter d'autres routes si nécessaire */}
+              </Routes>
+            </Router>
+          </BookingProvider>
+        </ConfigProvider>
+      </MarketingProvider>
     </ThemeProvider>
   );
 }
