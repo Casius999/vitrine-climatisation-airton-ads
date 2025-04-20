@@ -2,9 +2,9 @@
 
 ## Présentation
 
-Projet de création d'une page web vitrine dédiée à une prestation d'installation de climatisation Airton avec technologie ReadyClim. Cette solution permet une installation ultra-rapide (20 minutes) sans intervention d'un frigoriste grâce à une liaison frigorifique pré-chargée en gaz R32.
+Projet de page web vitrine dédiée à une prestation d'installation de climatisation Airton avec technologie ReadyClim. Cette solution permet une installation ultra-rapide (20 minutes) sans intervention d'un frigoriste grâce à une liaison frigorifique pré-chargée en gaz R32.
 
-## Caractéristiques du Projet
+## 📋 Caractéristiques du Projet
 
 ### Fonctionnalités Principales
 
@@ -15,6 +15,7 @@ Projet de création d'une page web vitrine dédiée à une prestation d'installa
 2. **Preuve Sociale et Crédibilité**
    - Intégration d'avis vérifiables (Allovoisin)
    - Affichage des 110+ avis positifs
+   - Présentation des certifications et garanties
 
 3. **Processus de Réservation et Paiement**
    - Module de paiement sécurisé via Stripe (acompte 40%)
@@ -24,15 +25,13 @@ Projet de création d'une page web vitrine dédiée à une prestation d'installa
 4. **Gestion des Données Client**
    - Sécurisation des informations de contact
    - Affichage des coordonnées du prestataire après confirmation
+   - Conformité RGPD
 
 5. **Zone d'Intervention**
    - Rayon de 30 km autour d'Eysines (incluant Bordeaux et CUB)
+   - Affichage dynamique des communes desservies
 
-6. **Stratégie d'Acquisition**
-   - Optimisation pour campagnes ADS
-   - Structure de conversion maximale
-
-## Avantages Produit
+## 🚀 Avantages Produit
 
 - Marque française Airton (20+ ans d'expérience)
 - Climatiseurs garantis 3 ans
@@ -40,123 +39,176 @@ Projet de création d'une page web vitrine dédiée à une prestation d'installa
 - Rapport qualité-prix optimal
 - Consommation énergétique optimisée
 
-## Architecture Technique
+## 🏗️ Architecture Technique
 
+### Architecture Globale
 Le projet utilise une architecture modulaire en microservices :
 
-1. **Frontend** - Interface utilisateur React.js
-2. **Backend** - Microservices :
-   - Configurateur (choix produits et options)
-   - Avis (gestion des témoignages)
-   - Réservation (gestion calendrier)
-   - Paiement (intégration Stripe)
-   - Notification (emails automatiques)
-   - Client (gestion données utilisateurs)
+#### Frontend
+- **Interface Utilisateur** : React.js avec Material-UI
+- **Routing** : React Router v6
+- **Gestion d'État** : Contextes React (ConfigContext, BookingContext)
+- **Modules UI** :
+  - ConfiguratorModule : Sélection d'options et calcul de prix
+  - ReviewsModule : Affichage des avis clients
+  - BookingPaymentModule : Réservation et paiement
+  - NotificationModule : Gestion des confirmations par email
 
-3. **Infrastructure** :
-   - API Gateway (Kong)
-   - Conteneurisation avec Docker
-   - Orchestration avec Kubernetes
-   - Bases de données dédiées par service
-   - CI/CD avec GitHub Actions
+#### Backend (Microservices)
+1. **Configurator Service** 
+   - Gestion du catalogue et des options
+   - Calcul des prix
+   - Tech : Node.js + Express + MongoDB
 
-Des détails complets sur l'architecture sont disponibles dans le dossier `docs/`.  
-Des diagrammes d'architecture se trouvent dans `docs/diagrams/`.  
-Les configurations Kubernetes sont dans le répertoire `kubernetes/`.  
+2. **Reviews Service**
+   - Gestion des avis clients
+   - Intégration avec Allovoisin
+   - Tech : Python + FastAPI + PostgreSQL
 
-## Technologies Utilisées
+3. **Booking Service**
+   - Gestion des créneaux et réservations
+   - Intégration avec Google Calendar API
+   - Tech : Java + Spring Boot + PostgreSQL
 
-- **Frontend** : React.js
-- **Backend** : Node.js (Express), Java (Spring Boot), Python (FastAPI)
-- **Bases de données** : MongoDB, PostgreSQL
-- **Messaging** : RabbitMQ
-- **Cache** : Redis
-- **API externes** :
-  - Google Calendar API
-  - Stripe API
-  - Gmail API
-  - Allovoisin API
+4. **Payment Service**
+   - Gestion des paiements via Stripe
+   - Sécurisation des transactions
+   - Tech : Node.js + Express + MongoDB
 
-## Démarrage Rapide
+5. **Notification Service**
+   - Gestion des emails de confirmation
+   - Intégration avec Gmail API
+   - Tech : Python + Flask + RabbitMQ
+
+#### Infrastructure
+- **API Gateway** : Kong pour centraliser les requêtes
+- **Containerisation** : Docker pour chaque service
+- **Orchestration** : Kubernetes pour le déploiement
+- **CI/CD** : GitHub Actions pour automatisation
+- **Bases de données** : MongoDB et PostgreSQL dédiées par service
+- **Messaging** : RabbitMQ pour communication asynchrone
+
+## 🔧 Technologies Utilisées
+
+### Frontend
+- React.js 18
+- Material-UI 5
+- React Router 6
+- Axios pour les requêtes API
+- Stripe.js pour l'intégration des paiements
+- Date-fns pour la gestion des dates
+
+### Backend
+- Node.js avec Express
+- Python avec FastAPI et Flask
+- Java avec Spring Boot
+- MongoDB pour les données non structurées
+- PostgreSQL pour les données relationnelles
+- RabbitMQ pour la messagerie
+
+### APIs Externes
+- Google Calendar API
+- Stripe API
+- Gmail API
+- Allovoisin API
+
+## 🚀 Démarrage Rapide
 
 ### Prérequis
-
+- Node.js (v18+)
 - Docker et Docker Compose
 - Kubernetes (pour le déploiement en production)
 - Clés API pour les services externes
 
-### Installation en développement
+### Installation en Développement
 
 ```bash
 # Cloner le dépôt
 git clone https://github.com/Casius999/vitrine-climatisation-airton-ads.git
 cd vitrine-climatisation-airton-ads
 
-# Lancer les services en développement
+# Installer les dépendances frontend
+cd frontend
+npm install
+
+# Créer un fichier .env avec les clés API
+echo "REACT_APP_API_URL=http://localhost:8000" > .env
+echo "REACT_APP_STRIPE_PUBLIC_KEY=pk_test_your_key" >> .env
+
+# Lancer le frontend en développement
+npm start
+
+# Dans un autre terminal, lancer les services backend
+cd ..
 docker-compose up -d
 ```
 
-### Déploiement en production
+### Variables d'Environnement
+
+Pour le développement local, créez un fichier `.env` dans le dossier `frontend` avec les variables suivantes :
+
+```
+REACT_APP_API_URL=http://localhost:8000
+REACT_APP_STRIPE_PUBLIC_KEY=pk_test_your_key
+```
+
+### Déploiement en Production
 
 ```bash
-# Configuration Kubernetes
+# Déploiement Kubernetes
 kubectl apply -k kubernetes/production/
 ```
 
-## Communication entre services
+## 📚 Documentation
 
-Les microservices communiquent de deux façons :
+Une documentation détaillée est disponible dans le dossier `docs/` :
 
-1. **Communication synchrone** via API REST pour les requêtes directes
-2. **Communication asynchrone** via RabbitMQ pour les événements (paiements, réservations, notifications)
+- `TECHNICAL_ARCHITECTURE.md` : Architecture technique détaillée
+- `diagrams/` : Diagrammes d'architecture
+- `API_DOCUMENTATION.md` : Documentation des API
 
-Un API Gateway (Kong) centralise les requêtes du frontend vers les différents microservices.
-
-## Sécurité
+## 🔒 Sécurité
 
 - Authentification OAuth 2.0
-- Chiffrement TLS/SSL
+- Chiffrement TLS/SSL pour toutes les communications
 - Protection CSRF/XSS
 - Conformité RGPD
+- Stockage sécurisé des données sensibles
 
-## Monitoring et observabilité
+## 📊 Monitoring et Observabilité
 
 - Prometheus pour les métriques
 - Grafana pour la visualisation
 - ELK Stack pour les logs centralisés
+- Alertes automatiques en cas d'incident
 
-## Pipeline CI/CD
+## 🤝 Contribuer
 
-Le projet utilise GitHub Actions pour automatiser :
-- Build et tests des microservices
-- Construction des images Docker
-- Déploiement sur Kubernetes
+Pour contribuer au projet :
 
-## Structure du projet
+1. Forker le dépôt
+2. Créer une branche de fonctionnalité (`git checkout -b feature/amazing-feature`)
+3. Commiter vos changements (`git commit -m 'feat: add amazing feature'`)
+4. Pousser la branche (`git push origin feature/amazing-feature`)
+5. Ouvrir une Pull Request
 
-```
-├── .github/workflows/      # CI/CD pipelines
-├── backend/                # Services backend
-│   ├── configurator-service/  # Service de configuration
-│   ├── booking-service/    # Service de réservation
-│   ├── payment-service/    # Service de paiement
-│   ├── reviews-service/    # Service d'avis
-│   └── notification-service/ # Service de notification
-├── config/                 # Fichiers de configuration
-├── docs/                   # Documentation
-│   └── diagrams/           # Diagrammes d'architecture
-├── frontend/              # Interface utilisateur React
-├── kubernetes/            # Manifests Kubernetes
-│   ├── base/              # Configuration de base
-│   └── production/        # Overlay de production
-└── docker-compose.yml     # Configuration Docker Compose
-```
+### Conventions de Code
 
-## Responsables du Projet
+Ce projet suit les conventions suivantes :
+- ESLint pour la qualité du code
+- Prettier pour le formatage
+- Conventional Commits pour les messages de commit
 
-- Développement Front-end: [À compléter]
-- Intégration API: [À compléter]
-- Design: [À compléter]
+## 📝 Licence
+
+Propriétaire - Tous droits réservés
+
+## ✨ Crédits
+
+- Design : [À compléter]
+- Développement Frontend : [À compléter]
+- Développement Backend : [À compléter]
+- Intégration API : [À compléter]
 
 ---
 
