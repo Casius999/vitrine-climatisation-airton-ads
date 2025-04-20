@@ -1,50 +1,173 @@
 _format_version: "2.1"
 
 services:
+  # Service Configurator
   - name: configurator-service
     url: http://configurator-service:3000
     routes:
       - name: configurator-route
         paths:
-          - /api/products
-          - /api/options
-          - /api/configure
-          - /api/product
+          - /configurator
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+          credentials: true
+          preflight_continue: false
+          max_age: 3600
 
+  # Service Reviews
+  - name: reviews-service
+    url: http://reviews-service:3000
+    routes:
+      - name: reviews-route
+        paths:
+          - /reviews
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+          credentials: true
+          preflight_continue: false
+          max_age: 3600
+
+  # Service Booking
   - name: booking-service
-    url: http://booking-service:8080
+    url: http://booking-service:3000
     routes:
       - name: booking-route
         paths:
-          - /api/slots
-          - /api/booking
+          - /booking
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+          credentials: true
+          preflight_continue: false
+          max_age: 3600
 
+  # Service Payment
   - name: payment-service
     url: http://payment-service:3000
     routes:
       - name: payment-route
         paths:
-          - /api/payment
+          - /payment
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+            - Stripe-Signature
+          credentials: true
+          preflight_continue: false
+          max_age: 3600
 
-  - name: reviews-service
-    url: http://reviews-service:8000
-    routes:
-      - name: reviews-route
-        paths:
-          - /api/reviews
-
+  # Service Notification
   - name: notification-service
-    url: http://notification-service:5000
+    url: http://notification-service:3000
     routes:
       - name: notification-route
         paths:
-          - /api/notify
+          - /notification
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+          credentials: true
+          preflight_continue: false
+          max_age: 3600
 
+  # Service Marketing & Acquisition
   - name: acquisition-marketing-service
-    url: http://acquisition-marketing-service:8004
+    url: http://acquisition-marketing-service:3000
     routes:
       - name: acquisition-marketing-route
         paths:
-          - /api/leads
-          - /api/chatbot
-          - /api/campaigns
+          - /acquisition
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+          credentials: true
+          preflight_continue: false
+          max_age: 3600
+          
+  # Service Commercial (Nouveau)
+  - name: commercial-service
+    url: http://commercial-service:3000
+    routes:
+      - name: commercial-route
+        paths:
+          - /commercial
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - '*'
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+          credentials: true
+          preflight_continue: false
+          max_age: 3600

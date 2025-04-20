@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Définition des styles -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+    <style type="text/css">
+      .box {
+        fill: #f5f5f5;
+        stroke: #333;
+        stroke-width: 2;
+        rx: 5;
+        ry: 5;
+      }
+      .service-box {
+        fill: #e3f2fd;
+        stroke: #2196f3;
+        stroke-width: 2;
+        rx: 5;
+        ry: 5;
+      }
+      .client-box {
+        fill: #e8f5e9;
+        stroke: #4caf50;
+        stroke-width: 2;
+        rx: 5;
+        ry: 5;
+      }
+      .payment-box {
+        fill: #fff8e1;
+        stroke: #ffc107;
+        stroke-width: 2;
+        rx: 5;
+        ry: 5;
+      }
+      .supplier-box {
+        fill: #f3e5f5;
+        stroke: #9c27b0;
+        stroke-width: 2;
+        rx: 5;
+        ry: 5;
+      }
+      .title {
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        text-anchor: middle;
+      }
+      .text {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        text-anchor: middle;
+      }
+      .arrow {
+        stroke: #333;
+        stroke-width: 2;
+        marker-end: url(#arrowhead);
+        fill: none;
+      }
+      .dashed-arrow {
+        stroke: #666;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;
+        marker-end: url(#arrowhead);
+        fill: none;
+      }
+      .label {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        fill: #333;
+      }
+    </style>
+  </defs>
+
+  <!-- Titre du diagramme -->
+  <text x="400" y="30" class="title" style="font-size: 22px;">Module de Devis, Paiement et Commandes Fournisseurs</text>
+
+  <!-- Client -->
+  <rect x="30" y="80" width="140" height="60" class="client-box" />
+  <text x="100" y="105" class="title" style="font-size: 16px;">Client</text>
+  <text x="100" y="125" class="text">Vitrines Web Airton</text>
+
+  <!-- Services -->
+  <rect x="200" y="150" width="150" height="60" class="service-box" />
+  <text x="275" y="175" class="title" style="font-size: 14px;">Configurator</text>
+  <text x="275" y="195" class="text">Service</text>
+
+  <rect x="380" y="150" width="150" height="60" class="service-box" />
+  <text x="455" y="175" class="title" style="font-size: 14px;">Commercial</text>
+  <text x="455" y="195" class="text">Service</text>
+
+  <rect x="560" y="150" width="150" height="60" class="payment-box" />
+  <text x="635" y="175" class="title" style="font-size: 14px;">Payment</text>
+  <text x="635" y="195" class="text">Service</text>
+
+  <rect x="380" y="250" width="150" height="60" class="service-box" />
+  <text x="455" y="275" class="title" style="font-size: 14px;">Notification</text>
+  <text x="455" y="295" class="text">Service</text>
+
+  <rect x="380" y="350" width="150" height="60" class="service-box" />
+  <text x="455" y="375" class="title" style="font-size: 14px;">Booking</text>
+  <text x="455" y="395" class="text">Service</text>
+
+  <!-- Fournisseur -->
+  <rect x="560" y="350" width="140" height="60" class="supplier-box" />
+  <text x="630" y="375" class="title" style="font-size: 16px;">Airton</text>
+  <text x="630" y="395" class="text">Fournisseur</text>
+
+  <!-- Flux principal -->
+  <path d="M 100 140 L 100 250 L 230 250 L 230 210" class="arrow" />
+  <text x="120" y="230" class="label">1. Configuration</text>
+  
+  <path d="M 350 180 L 380 180" class="arrow" />
+  <text x="365" y="170" class="label">2. Génère</text>
+  <text x="365" y="183" class="label">devis</text>
+  
+  <path d="M 530 180 L 560 180" class="arrow" />
+  <text x="545" y="170" class="label">3. Paiement</text>
+  <text x="545" y="183" class="label">acompte 40%</text>
+  
+  <path d="M 635 210 L 635 240 L 530 240 L 530 250" class="arrow" />
+  <text x="590" y="235" class="label">4. Notification</text>
+  <text x="590" y="248" class="label">confirmation</text>
+  
+  <path d="M 455 310 L 455 350" class="arrow" />
+  <text x="435" y="330" class="label">5. Planification</text>
+  <text x="435" y="343" class="label">installation</text>
+  
+  <path d="M 530 380 L 560 380" class="arrow" />
+  <text x="545" y="370" class="label">6. Commande</text>
+  <text x="545" y="383" class="label">groupée</text>
+
+  <!-- Paiements supplémentaires -->
+  <path d="M 455 410 C 455 440, 635 440, 635 210" class="dashed-arrow" stroke="#ffc107" />
+  <text x="490" y="438" class="label" fill="#ffc107">7. Paiement jour installation (30%)</text>
+  
+  <path d="M 455 410 C 455 470, 665 470, 665 210" class="dashed-arrow" stroke="#ffc107" />
+  <text x="500" y="468" class="label" fill="#ffc107">8. Paiement après installation (30%)</text>
+
+  <!-- Base de données -->
+  <ellipse cx="455" cy="520" rx="120" ry="40" fill="#e0e0e0" stroke="#333" stroke-width="2" />
+  <text x="455" y="520" class="title" style="font-size: 14px;">MongoDB</text>
+  <text x="455" y="540" class="text">Stockage des données</text>
+  
+  <path d="M 455 410 L 455 480" class="arrow" />
+  <text x="435" y="450" class="label">Stockage</text>
+  <text x="435" y="463" class="label">central</text>
+  
+  <!-- Légende -->
+  <rect x="30" y="500" width="120" height="20" class="client-box" />
+  <text x="90" y="515" class="text">Client</text>
+  
+  <rect x="30" y="525" width="120" height="20" class="service-box" />
+  <text x="90" y="540" class="text">Services Backend</text>
+  
+  <rect x="30" y="550" width="120" height="20" class="payment-box" />
+  <text x="90" y="565" class="text">Paiement Stripe</text>
+  
+  <rect x="30" y="575" width="120" height="20" class="supplier-box" />
+  <text x="90" y="590" class="text">Fournisseur</text>
+  
+  <text x="400" y="590" class="text" style="font-size: 10px;">© 2025 Vitrine Climatisation Airton ADS</text>
+</svg>
