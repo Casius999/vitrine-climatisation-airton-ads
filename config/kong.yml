@@ -39,3 +39,12 @@ services:
       - name: notification-route
         paths:
           - /api/notify
+
+  - name: acquisition-marketing-service
+    url: http://acquisition-marketing-service:8004
+    routes:
+      - name: acquisition-marketing-route
+        paths:
+          - /api/leads
+          - /api/chatbot
+          - /api/campaigns
