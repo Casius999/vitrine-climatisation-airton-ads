@@ -1,142 +1,194 @@
 version: '3.8'
 
 services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - api-gateway
-
-  api-gateway:
-    image: kong:2.8-alpine
-    ports:
-      - "8000:8000"
-      - "8001:8001"
-      - "8443:8443"
-      - "8444:8444"
+  # API Gateway
+  kong:
+    image: kong:latest
     environment:
       - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/etc/kong/kong.yml
       - KONG_PROXY_ACCESS_LOG=/dev/stdout
       - KONG_ADMIN_ACCESS_LOG=/dev/stdout
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
-      - KONG_DECLARATIVE_CONFIG=/etc/kong/kong.yml
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
     volumes:
       - ./config/kong.yml:/etc/kong/kong.yml
+    restart: always
 
+  # Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - REACT_APP_CONFIGURATOR_API_URL=http://localhost:8000/configurator
+      - REACT_APP_REVIEWS_API_URL=http://localhost:8000/reviews
+      - REACT_APP_BOOKING_API_URL=http://localhost:8000/booking
+      - REACT_APP_PAYMENT_API_URL=http://localhost:8000/payment
+      - REACT_APP_NOTIFICATION_API_URL=http://localhost:8000/notification
+      - REACT_APP_COMMERCIAL_API_URL=http://localhost:8000/commercial
+    restart: always
+
+  # Configurator Service
   configurator-service:
     build: ./backend/configurator-service
     ports:
       - "3001:3000"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/configurator
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/configurator
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
-      - mongodb
+      - mongo
       - redis
+    restart: always
 
-  booking-service:
-    build: ./backend/booking-service
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/booking
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=password
-      - GOOGLE_CALENDAR_CREDENTIALS=dummy-credentials
-    depends_on:
-      - postgres
-
-  payment-service:
-    build: ./backend/payment-service
-    ports:
-      - "3002:3000"
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/payment
-      - STRIPE_SECRET_KEY=dummy-key
-      - STRIPE_WEBHOOK_SECRET=dummy-secret
-    depends_on:
-      - mongodb
-
+  # Reviews Service
   reviews-service:
     build: ./backend/reviews-service
     ports:
-      - "8000:8000"
+      - "3002:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/reviews
-      - ALLOVOISIN_API_KEY=dummy-key
+      - PORT=3000
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/reviews
+      - ALLOVOISIN_API_KEY=${ALLOVOISIN_API_KEY}
     depends_on:
       - postgres
+    restart: always
 
+  # Booking Service
+  booking-service:
+    build: ./backend/booking-service
+    ports:
+      - "3003:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/booking
+      - GOOGLE_CALENDAR_API_KEY=${GOOGLE_CALENDAR_API_KEY}
+      - GOOGLE_CALENDAR_ID=${GOOGLE_CALENDAR_ID}
+    depends_on:
+      - postgres
+    restart: always
+
+  # Payment Service
+  payment-service:
+    build: ./backend/payment-service
+    ports:
+      - "3004:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/payment
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - COMMERCIAL_SERVICE_URL=http://commercial-service:3000
+      - FRONTEND_URL=http://frontend:80
+    depends_on:
+      - mongo
+    restart: always
+
+  # Notification Service
   notification-service:
     build: ./backend/notification-service
     ports:
-      - "5000:5000"
+      - "3005:3000"
     environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - GMAIL_API_CREDENTIALS=dummy-credentials
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/notification
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - GMAIL_API_KEY=${GMAIL_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
     depends_on:
+      - mongo
       - rabbitmq
+    restart: always
 
+  # Marketing & Acquisition Service
   acquisition-marketing-service:
     build: ./backend/acquisition-marketing-service
     ports:
-      - "8004:8004"
+      - "3006:3000"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/acquisition-marketing
-      - EMAIL_HOST=smtp.example.com
-      - EMAIL_PORT=587
-      - EMAIL_USER=dummy-user
-      - EMAIL_PASSWORD=dummy-password
-      - EMAIL_SECURE=false
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - GOOGLE_ADS_API_KEY=dummy-key
-      - FACEBOOK_ADS_API_KEY=dummy-key
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/acquisition
+      - GOOGLE_ADS_API_KEY=${GOOGLE_ADS_API_KEY}
+      - FACEBOOK_ADS_API_KEY=${FACEBOOK_ADS_API_KEY}
     depends_on:
-      - mongodb
-      - rabbitmq
-      
-  mongodb:
-    image: mongo:6.0-focal
+      - mongo
+    restart: always
+
+  # NEW: Commercial Service
+  commercial-service:
+    build: ./backend/commercial-service
+    ports:
+      - "3007:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/commercial
+      - PAYMENT_SERVICE_URL=http://payment-service:3000
+      - CONFIGURATOR_SERVICE_URL=http://configurator-service:3000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+      - AIRTON_EMAIL=service-client@airton.shop
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM}
+    depends_on:
+      - mongo
+    restart: always
+
+  # Databases
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
     ports:
       - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
+    restart: always
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASES=reviews,booking
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./config/postgres-init.sh:/docker-entrypoint-initdb.d/postgres-init.sh
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_USER=postgres
-      - POSTGRES_MULTIPLE_DATABASES=booking,reviews
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./config/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
+    restart: always
 
+  # Caching
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+
+  # Messaging
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - rabbitmq-data:/var/lib/rabbitmq
+    restart: always
 
 volumes:
-  mongodb_data:
-  postgres_data:
-  rabbitmq_data:
-  redis_data:
+  mongo-data:
+  postgres-data:
+  redis-data:
+  rabbitmq-data:

@@ -18,16 +18,21 @@ Projet de page web vitrine dédiée à une prestation d'installation de climatis
    - Présentation des certifications et garanties
 
 3. **Processus de Réservation et Paiement**
-   - Module de paiement sécurisé via Stripe (acompte 40%)
+   - Module de paiement sécurisé via Stripe (paiement en 3 tranches)
    - Calendrier de réservation dynamique via Google Calendar API
    - Notifications automatiques par email après réservation
 
-4. **Gestion des Données Client**
+4. **Gestion des Devis et Commandes**
+   - Génération automatique de devis détaillés (PDF)
+   - Gestion des paiements en 3 tranches (40% d'acompte, 30% à l'installation, 30% après)
+   - Suivi des commandes fournisseur auprès d'Airton
+
+5. **Gestion des Données Client**
    - Sécurisation des informations de contact
    - Affichage des coordonnées du prestataire après confirmation
    - Conformité RGPD
 
-5. **Zone d'Intervention**
+6. **Zone d'Intervention**
    - Rayon de 30 km autour d'Eysines (incluant Bordeaux et CUB)
    - Affichage dynamique des communes desservies
 
@@ -47,12 +52,13 @@ Le projet utilise une architecture modulaire en microservices :
 #### Frontend
 - **Interface Utilisateur** : React.js avec Material-UI
 - **Routing** : React Router v6
-- **Gestion d'État** : Contextes React (ConfigContext, BookingContext)
+- **Gestion d'État** : Contextes React (ConfigContext, BookingContext, QuoteContext)
 - **Modules UI** :
   - ConfiguratorModule : Sélection d'options et calcul de prix
   - ReviewsModule : Affichage des avis clients
   - BookingPaymentModule : Réservation et paiement
   - NotificationModule : Gestion des confirmations par email
+  - QuoteModule : Génération de devis et suivi de paiement
 
 #### Backend (Microservices)
 1. **Configurator Service** 
@@ -72,13 +78,19 @@ Le projet utilise une architecture modulaire en microservices :
 
 4. **Payment Service**
    - Gestion des paiements via Stripe
-   - Sécurisation des transactions
+   - Gestion des paiements en 3 tranches
    - Tech : Node.js + Express + MongoDB
 
 5. **Notification Service**
    - Gestion des emails de confirmation
    - Intégration avec Gmail API
    - Tech : Python + Flask + RabbitMQ
+
+6. **Commercial Service**
+   - Génération de devis PDF
+   - Gestion des commandes fournisseurs
+   - Suivi des paiements par tranche
+   - Tech : Node.js + Express + MongoDB
 
 #### Infrastructure
 - **API Gateway** : Kong pour centraliser les requêtes
@@ -105,6 +117,7 @@ Le projet utilise une architecture modulaire en microservices :
 - MongoDB pour les données non structurées
 - PostgreSQL pour les données relationnelles
 - RabbitMQ pour la messagerie
+- PDFKit pour la génération de PDF
 
 ### APIs Externes
 - Google Calendar API
@@ -145,11 +158,28 @@ docker-compose up -d
 
 ### Variables d'Environnement
 
-Pour le développement local, créez un fichier `.env` dans le dossier `frontend` avec les variables suivantes :
+Pour le développement local, créez un fichier `.env` dans le dossier racine avec les variables suivantes :
 
 ```
-REACT_APP_API_URL=http://localhost:8000
-REACT_APP_STRIPE_PUBLIC_KEY=pk_test_your_key
+# API Keys
+STRIPE_PUBLIC_KEY=pk_test_your_key
+STRIPE_SECRET_KEY=sk_test_your_key
+STRIPE_WEBHOOK_SECRET=your_webhook_secret
+GOOGLE_CALENDAR_API_KEY=your_google_api_key
+GOOGLE_CALENDAR_ID=your_calendar_id
+ALLOVOISIN_API_KEY=your_allovoisin_key
+GMAIL_API_KEY=your_gmail_api_key
+GOOGLE_ADS_API_KEY=your_google_ads_key
+FACEBOOK_ADS_API_KEY=your_facebook_ads_key
+
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM=contact@airton-installation.fr
+EMAIL_FROM=contact@airton-installation.fr
 ```
 
 ### Déploiement en Production
@@ -164,6 +194,7 @@ kubectl apply -k kubernetes/production/
 Une documentation détaillée est disponible dans le dossier `docs/` :
 
 - `TECHNICAL_ARCHITECTURE.md` : Architecture technique détaillée
+- `COMMERCIAL_MODULE.md` : Documentation du module de devis et commandes
 - `diagrams/` : Diagrammes d'architecture
 - `API_DOCUMENTATION.md` : Documentation des API
 
