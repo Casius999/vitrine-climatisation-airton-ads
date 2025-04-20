@@ -1,0 +1,238 @@
+/* Responsive Styles */
+
+/* Large Screens (1200px and up) */
+@media screen and (min-width: 1200px) {
+    .container {
+        padding: 0 30px;
+    }
+}
+
+/* Medium Screens (992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    .container {
+        padding: 0 20px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Tablets (768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    /* Hero Section */
+    .hero-section .container {
+        flex-direction: column;
+    }
+
+    .hero-content {
+        padding-right: 0;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .trust-indicators {
+        justify-content: center;
+    }
+
+    /* Technology Section */
+    .technology-content {
+        flex-direction: column;
+    }
+
+    .technology-image {
+        margin-bottom: 30px;
+    }
+
+    /* Configuration Section */
+    .config-container {
+        grid-template-columns: 1fr;
+    }
+
+    /* Booking Section */
+    .booking-container {
+        grid-template-columns: 1fr;
+    }
+
+    /* Zone Section */
+    .zone-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile Devices (up to 767px) */
+@media screen and (max-width: 767px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    /* Header */
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+
+    .main-nav.active {
+        display: block;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+    }
+
+    .main-nav li {
+        margin: 10px 0;
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        padding: 40px 0;
+    }
+
+    .hero-section .container {
+        flex-direction: column;
+    }
+
+    .hero-content {
+        padding-right: 0;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .trust-indicators {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* Advantages Section */
+    .advantages-section {
+        padding: 40px 0;
+    }
+
+    .advantages-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Technology Section */
+    .technology-section {
+        padding: 40px 0;
+    }
+
+    .technology-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Configuration Section */
+    .config-section {
+        padding: 40px 0;
+    }
+
+    .config-container {
+        grid-template-columns: 1fr;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 40px 0;
+    }
+
+    /* Booking Section */
+    .booking-section {
+        padding: 40px 0;
+    }
+
+    .booking-container {
+        grid-template-columns: 1fr;
+    }
+
+    /* Zone Section */
+    .zone-section {
+        padding: 40px 0;
+    }
+
+    .zone-content {
+        grid-template-columns: 1fr;
+    }
+
+    .zone-list {
+        column-count: 1;
+    }
+
+    /* Footer */
+    .site-footer {
+        padding: 40px 0 20px;
+    }
+
+    .footer-columns {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+/* Small Mobile Devices (up to 480px) */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .primary-button, .secondary-button, .cta-button {
+        width: 100%;
+        padding: 12px 0;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .logo-container img {
+        height: 40px;
+    }
+}
