@@ -103,6 +103,55 @@ docker-compose up -d
 kubectl apply -k kubernetes/production/
 ```
 
+## Communication entre services
+
+Les microservices communiquent de deux façons :
+
+1. **Communication synchrone** via API REST pour les requêtes directes
+2. **Communication asynchrone** via RabbitMQ pour les événements (paiements, réservations, notifications)
+
+Un API Gateway (Kong) centralise les requêtes du frontend vers les différents microservices.
+
+## Sécurité
+
+- Authentification OAuth 2.0
+- Chiffrement TLS/SSL
+- Protection CSRF/XSS
+- Conformité RGPD
+
+## Monitoring et observabilité
+
+- Prometheus pour les métriques
+- Grafana pour la visualisation
+- ELK Stack pour les logs centralisés
+
+## Pipeline CI/CD
+
+Le projet utilise GitHub Actions pour automatiser :
+- Build et tests des microservices
+- Construction des images Docker
+- Déploiement sur Kubernetes
+
+## Structure du projet
+
+```
+├── .github/workflows/      # CI/CD pipelines
+├── backend/                # Services backend
+│   ├── configurator-service/  # Service de configuration
+│   ├── booking-service/    # Service de réservation
+│   ├── payment-service/    # Service de paiement
+│   ├── reviews-service/    # Service d'avis
+│   └── notification-service/ # Service de notification
+├── config/                 # Fichiers de configuration
+├── docs/                   # Documentation
+│   └── diagrams/           # Diagrammes d'architecture
+├── frontend/              # Interface utilisateur React
+├── kubernetes/            # Manifests Kubernetes
+│   ├── base/              # Configuration de base
+│   └── production/        # Overlay de production
+└── docker-compose.yml     # Configuration Docker Compose
+```
+
 ## Responsables du Projet
 
 - Développement Front-end: [À compléter]
