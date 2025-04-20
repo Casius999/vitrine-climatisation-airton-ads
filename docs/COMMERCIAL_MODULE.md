@@ -1,183 +1,139 @@
-# Module de Devis, Paiement et Commandes Fournisseurs
+# Module Commercial - Documentation
 
-Ce document présente le module de gestion commerciale et financière pour le projet **Vitrine Climatisation Airton ADS**. Le module permet de gérer les devis, les paiements échelonnés et les commandes fournisseurs auprès d'Airton.
+## Présentation
 
-## Architecture du Module
+Le Module Commercial est une solution complète pour la gestion des devis, des paiements en 3 tranches et du suivi des commandes fournisseurs pour le projet "Vitrine Climatisation Airton ADS". Ce module a été conçu pour faciliter la conversion des visiteurs en clients et assurer une gestion efficace du cycle de vente complet.
 
-Le module est intégré dans l'architecture microservices existante du projet et se compose de :
+## Fonctionnalités Principales
 
-1. Un nouveau service backend **commercial-service** dédié à la gestion des devis et des commandes fournisseurs
-2. Des modifications du service **payment-service** existant pour gérer les paiements en 3 tranches
-3. De nouvelles interfaces frontend pour la gestion de ces fonctionnalités
+### 1. Génération et Gestion des Devis
 
-## Fonctionnalités
+- **Génération automatique** de devis basés sur les configurations choisies par les clients
+- **Personnalisation** des devis avec les coordonnées client et les détails techniques
+- **Visualisation et modification** des devis existants
+- **Export PDF** des devis pour l'envoi aux clients ou l'archivage
+- **Statuts de suivi** (brouillon, validé, payé, expiré, etc.)
 
-### 1. Génération Automatique de Devis
+### 2. Paiements en 3 Tranches
 
-La génération automatique de devis s'effectue à partir des informations fournies par le client :
+- **Échelonnement automatique** des paiements selon la règle suivante :
+  - 40% à la commande (acompte initial)
+  - 30% le jour du rendez-vous d'installation
+  - 30% après l'installation complète
+- **Intégration avec Stripe** pour les paiements sécurisés par carte bancaire
+- **Tableau de bord** de suivi de l'état des paiements pour chaque commande
+- **Notifications automatiques** pour rappeler les paiements à venir
+- **Génération de factures** pour chaque paiement effectué
 
-- Choix du modèle de climatiseur
-- Options et configuration sélectionnées
-- Informations client et adresse d'installation
-- Date d'installation souhaitée
+### 3. Suivi des Commandes Fournisseurs
 
-Le système calcule automatiquement :
-- Le prix total TTC
-- La répartition du paiement en 3 tranches (40% d'acompte, 30% le jour de l'installation, 30% après l'installation)
+- **Création automatique** des commandes auprès d'Airton après validation du devis
+- **Suivi en temps réel** de l'état des commandes (commandé, confirmé, expédié, livré)
+- **Gestion des numéros de suivi** et dates de livraison prévisionnelles
+- **Historique complet** des étapes de chaque commande
+- **Alertes automatiques** en cas de retard ou d'anomalie
 
-Le devis peut être :
-- Envoyé par email au client
-- Téléchargé au format PDF
-- Consultable dans l'interface d'administration
+## Architecture Technique
 
-### 2. Gestion des Paiements en 3 Tranches
+### Frontend
 
-Le système gère les 3 étapes de paiement :
+Le frontend utilise React avec Material-UI et s'articule autour des composants suivants :
 
-- **Acompte (40%)** : Payé lors de la confirmation du devis via Stripe
-- **Paiement à l'installation (30%)** : Payé le jour du rendez-vous via un lien de paiement envoyé automatiquement
-- **Paiement final (30%)** : Payé après l'installation via un lien de paiement envoyé automatiquement
+- **QuoteManager** : Gestion de la création et validation des devis
+- **QuoteDetails** : Affichage détaillé des devis
+- **PaymentTracker** : Suivi des paiements en 3 tranches
+- **SupplierOrderTracker** : Suivi des commandes fournisseurs
+- **QuotePDFDocument** : Génération de devis au format PDF
 
-Chaque étape de paiement est suivie et peut être gérée depuis l'interface d'administration.
+L'état global est géré via le contexte React (QuoteContext) qui centralise les données et les actions.
 
-### 3. Commande Fournisseur et Collaboration avec Airton
+### Backend
 
-Le module permet :
+Le backend est organisé en microservices REST qui fournissent les API nécessaires :
 
-- De créer des commandes fournisseurs auprès d'Airton à partir d'un ou plusieurs devis confirmés
-- De regrouper automatiquement les commandes pour optimiser les achats
-- D'envoyer par email les informations de commande au format structuré à Airton
-- De suivre l'état des commandes (création, confirmation, expédition, livraison)
+- **Quote Service** : API pour les devis
+- **Order Service** : API pour les commandes et paiements
+- **Supplier Order Service** : API pour les commandes fournisseurs
 
-Une commande fournisseur peut être créée :
-- Manuellement depuis l'interface d'administration
-- Automatiquement lorsqu'un nombre suffisant de devis avec acompte ont été validés
+Les données sont stockées dans une base MongoDB pour les documents non structurés (devis, commandes).
 
-### 4. Gestion Centrale et Suivi des Commandes et Facturations
+### Intégrations
 
-L'interface d'administration permet :
+Le module s'intègre avec différents services externes :
 
-- De visualiser l'ensemble des devis et leur statut
-- De suivre les paiements pour chaque devis
-- De gérer les commandes fournisseurs
-- D'envoyer des emails au client ou au fournisseur
-- De générer des documents (devis PDF)
+- **Stripe** pour le traitement des paiements
+- **API Airton** pour la gestion des commandes fournisseurs (simulée dans la version actuelle)
+- **Services d'emails** pour les notifications
 
-## Flux de Fonctionnement
+## Guide d'Utilisation
 
-### Flux de création d'un devis et gestion du paiement
+### Génération d'un Devis
 
-1. Le client configure son choix de climatiseur sur le site vitrine
-2. Le système génère un devis détaillé
-3. Le client confirme le devis et paie l'acompte (40%)
-4. Le système enregistre le paiement et met à jour le statut du devis
-5. Le système vérifie si une commande fournisseur peut être créée
-6. Le jour de l'installation, le système envoie un lien pour le paiement intermédiaire (30%)
-7. Après l'installation, le système envoie un lien pour le paiement final (30%)
+1. Accédez à la page "Devis" depuis le tableau de bord
+2. Cliquez sur "Nouveau Devis"
+3. Sélectionnez les options de configuration et renseignez les coordonnées client
+4. Validez pour générer automatiquement le devis
+5. Vérifiez les détails du devis et ajustez si nécessaire
+6. Cliquez sur "Valider le devis" pour finaliser
 
-### Flux de commande fournisseur
+### Suivi des Paiements
 
-1. Un ou plusieurs devis avec acompte payé sont sélectionnés
-2. Le système crée une commande groupée
-3. Un email est envoyé à Airton avec les détails de la commande
-4. Le statut de la commande est suivi (confirmée, expédiée, livrée)
-5. Les informations de suivi sont enregistrées et communiquées aux clients
+1. Depuis le détail d'un devis validé, cliquez sur "Créer une commande"
+2. Accédez à l'onglet "Suivi des Paiements"
+3. Pour le premier paiement (acompte), cliquez sur "Effectuer le paiement"
+4. Entrez les informations de carte bancaire (via Stripe) ou sélectionnez un autre mode de paiement
+5. Une fois le paiement confirmé, son statut est mis à jour automatiquement
+6. Les paiements suivants sont débloqués selon le calendrier d'installation
 
-## API du Module
+### Gestion des Commandes Fournisseurs
 
-### API Commercial Service
+1. Accédez à l'onglet "Commandes Fournisseurs"
+2. Pour une nouvelle commande, cliquez sur "Nouvelle commande"
+3. Sélectionnez les produits et quantités à commander
+4. Validez pour créer la commande auprès du fournisseur
+5. Suivez l'évolution de la commande et mettez à jour son statut à chaque étape
+6. Ajoutez le numéro de suivi dès réception et les dates prévisionnelles
 
-- `POST /api/quotes` : Crée un nouveau devis
-- `GET /api/quotes/:id` : Récupère un devis par ID
-- `GET /api/quotes` : Liste tous les devis avec filtrage
-- `GET /api/quotes/:id/pdf` : Génère un PDF du devis
-- `PATCH /api/quotes/:id/status` : Met à jour le statut d'un devis
-- `PATCH /api/quotes/:id/payment-status` : Met à jour le statut de paiement
-- `POST /api/quotes/:id/send` : Envoie le devis par email
-- `POST /api/supplier-orders` : Crée une commande fournisseur
-- `GET /api/supplier-orders/:id` : Récupère une commande fournisseur
-- `GET /api/supplier-orders` : Liste toutes les commandes
-- `PATCH /api/supplier-orders/:id/status` : Met à jour le statut d'une commande
-- `POST /api/supplier-orders/:id/send` : Envoie la commande au fournisseur
-- `GET /api/dashboard/summary` : Récupère un résumé des données pour le tableau de bord
+## Déploiement
 
-### API Payment Service (mises à jour)
+Le module commercial est intégré au reste de l'application et utilise le même pipeline CI/CD. Pour un déploiement spécifique du module :
 
-- `POST /api/payment/intent` : Crée une intention de paiement (ajout du quoteId et paymentType)
-- `POST /api/payment/confirm` : Confirme un paiement
-- `GET /api/payment/:id` : Récupère les détails d'un paiement
-- `GET /api/payments/quote/:quoteId` : Liste tous les paiements pour un devis
-- `POST /api/payment/create-installation-payment-link` : Crée un lien de paiement pour le jour de l'installation
-- `POST /api/payment/create-final-payment-link` : Crée un lien de paiement pour le paiement final
+1. Assurez-vous que toutes les dépendances sont installées (`npm install`)
+2. Configurez les variables d'environnement :
+   - `REACT_APP_API_URL` : URL de l'API backend
+   - `REACT_APP_STRIPE_PUBLIC_KEY` : Clé publique Stripe
+   - (Autres variables spécifiques à l'environnement)
+3. Lancez la compilation (`npm run build`)
+4. Déployez les fichiers générés sur votre serveur web
 
-## Configuration et Déploiement
+## Sécurité
 
-### Variables d'environnement
+Le module commercial manipule des données sensibles et intègre plusieurs mesures de sécurité :
 
-**Commercial Service**
-```
-PORT=3003
-MONGODB_URI=mongodb://localhost:27017/commercial
-PAYMENT_SERVICE_URL=http://payment-service:3000
-CONFIGURATOR_SERVICE_URL=http://configurator-service:3000
-NOTIFICATION_SERVICE_URL=http://notification-service:3000
-AIRTON_EMAIL=service-client@airton.shop
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-SMTP_FROM=devis@airton-installation.fr
-```
+- Chiffrement SSL/TLS pour toutes les communications
+- Tokens JWT pour l'authentification des API
+- Intégration PCI-DSS via Stripe pour les paiements
+- Validation des entrées côté client et serveur
+- Protection CSRF pour les formulaires
+- Logs d'audit pour toutes les opérations sensibles
 
-**Payment Service (ajouts)**
-```
-COMMERCIAL_SERVICE_URL=http://commercial-service:3003
-FRONTEND_URL=http://localhost:3000
-```
+## Roadmap et Évolutions Futures
 
-### Intégration Docker
+- Intégration d'un système de signature électronique des devis
+- Ajout de modes de paiement supplémentaires (virement, financement)
+- Automatisation complète des commandes fournisseurs via API
+- Dashboard analytique avec KPIs commerciaux
+- Optimisation mobile du parcours de paiement
+- Système de relance automatique pour devis non validés
 
-Le nouveau service est intégré dans le fichier `docker-compose.yml` existant :
+## Support et Maintenance
 
-```yaml
-  commercial-service:
-    build: ./backend/commercial-service
-    ports:
-      - "3003:3000"
-    environment:
-      - PORT=3000
-      - MONGODB_URI=mongodb://mongo:27017/commercial
-      - PAYMENT_SERVICE_URL=http://payment-service:3000
-      - CONFIGURATOR_SERVICE_URL=http://configurator-service:3000
-      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
-      - AIRTON_EMAIL=service-client@airton.shop
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_SECURE=${SMTP_SECURE}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASS=${SMTP_PASS}
-      - SMTP_FROM=${SMTP_FROM}
-    depends_on:
-      - mongo
-    restart: always
-```
+Pour toute question ou problème concernant le module commercial :
 
-## Possibilités d'évolution
+- Consultez la documentation technique dans le dossier `docs/`
+- Vérifiez les logs d'erreur dans la console ou le système de monitoring
+- Contactez l'équipe technique à support@airton-installation.fr
 
-Le module a été conçu pour évoluer vers une automatisation complète :
+---
 
-1. **Automatisation complète des commandes** : API directe avec Airton pour la soumission des commandes
-2. **Intégration du suivi de livraison** : API avec les transporteurs pour le suivi en temps réel
-3. **Système de relances automatiques** : Relances pour les paiements en retard
-4. **Tableau de bord avancé** : Statistiques et prévisions financières
-5. **Intégration comptable** : Export des factures vers un logiciel de comptabilité
-
-## Maintenance et Support
-
-Le module inclut :
-
-- Des logs détaillés pour le suivi des opérations
-- Une gestion des erreurs robuste
-- Des tests unitaires et d'intégration pour chaque fonctionnalité
-- Une documentation complète du code et des API
+*Module développé dans le cadre du projet "Vitrine Climatisation Airton ADS" - © 2025*
