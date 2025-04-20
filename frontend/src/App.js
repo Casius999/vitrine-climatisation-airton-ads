@@ -11,6 +11,7 @@ import ContactPage from './pages/ContactPage';
 import QuoteGeneratorPage from './pages/QuoteGeneratorPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
+import QuoteManagementPage from './pages/QuoteManagementPage';
 
 // Pages administratives
 import AdminLayout from './layouts/AdminLayout';
@@ -19,6 +20,9 @@ import QuoteListPage from './pages/BackOffice/QuoteListPage';
 import SupplierOrdersPage from './pages/BackOffice/SupplierOrdersPage';
 import ConfigurationPage from './pages/BackOffice/ConfigurationPage';
 import UserManagementPage from './pages/BackOffice/UserManagementPage';
+
+// Contextes
+import { QuoteProvider } from './contexts/QuoteContext';
 
 const theme = createTheme({
   palette: {
@@ -105,30 +109,36 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <Routes>
-            {/* Routes publiques */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/products" element={<ProductPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/quote" element={<QuoteGeneratorPage />} />
-            <Route path="/payment/success" element={<PaymentSuccessPage />} />
-            <Route path="/payment/cancel" element={<PaymentCancelPage />} />
-            
-            {/* Routes administratives */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="quotes" element={<QuoteListPage />} />
-              <Route path="supplier-orders" element={<SupplierOrdersPage />} />
-              <Route path="configuration" element={<ConfigurationPage />} />
-              <Route path="users" element={<UserManagementPage />} />
-            </Route>
-          </Routes>
-        </Box>
-      </Router>
+      <QuoteProvider>
+        <Router>
+          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <Routes>
+              {/* Routes publiques */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/products" element={<ProductPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/quote" element={<QuoteGeneratorPage />} />
+              <Route path="/payment/success" element={<PaymentSuccessPage />} />
+              <Route path="/payment/cancel" element={<PaymentCancelPage />} />
+              
+              {/* Routes de gestion commerciale */}
+              <Route path="/quote-management" element={<QuoteManagementPage />} />
+              <Route path="/quote-management/:quoteId" element={<QuoteManagementPage />} />
+              
+              {/* Routes administratives */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="quotes" element={<QuoteListPage />} />
+                <Route path="supplier-orders" element={<SupplierOrdersPage />} />
+                <Route path="configuration" element={<ConfigurationPage />} />
+                <Route path="users" element={<UserManagementPage />} />
+              </Route>
+            </Routes>
+          </Box>
+        </Router>
+      </QuoteProvider>
     </ThemeProvider>
   );
 }
