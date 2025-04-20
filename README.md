@@ -40,25 +40,68 @@ Projet de création d'une page web vitrine dédiée à une prestation d'installa
 - Rapport qualité-prix optimal
 - Consommation énergétique optimisée
 
-## Structure du Projet
+## Architecture Technique
 
-- `/assets` - Ressources statiques (images, logos, etc.)
-- `/css` - Feuilles de style
-- `/js` - Scripts JavaScript
-- `/api` - Intégrations API (Google Calendar, Stripe)
-- `/components` - Composants réutilisables
+Le projet utilise une architecture modulaire en microservices :
+
+1. **Frontend** - Interface utilisateur React.js
+2. **Backend** - Microservices :
+   - Configurateur (choix produits et options)
+   - Avis (gestion des témoignages)
+   - Réservation (gestion calendrier)
+   - Paiement (intégration Stripe)
+   - Notification (emails automatiques)
+   - Client (gestion données utilisateurs)
+
+3. **Infrastructure** :
+   - API Gateway (Kong)
+   - Conteneurisation avec Docker
+   - Orchestration avec Kubernetes
+   - Bases de données dédiées par service
+   - CI/CD avec GitHub Actions
+
+Des détails complets sur l'architecture sont disponibles dans le dossier `docs/`.  
+Des diagrammes d'architecture se trouvent dans `docs/diagrams/`.  
+Les configurations Kubernetes sont dans le répertoire `kubernetes/`.  
 
 ## Technologies Utilisées
 
-- HTML5 / CSS3 / JavaScript
-- API Google Calendar
-- API Stripe pour paiements
-- API Gmail pour notifications
-- Framework responsive pour l'affichage mobile
+- **Frontend** : React.js
+- **Backend** : Node.js (Express), Java (Spring Boot), Python (FastAPI)
+- **Bases de données** : MongoDB, PostgreSQL
+- **Messaging** : RabbitMQ
+- **Cache** : Redis
+- **API externes** :
+  - Google Calendar API
+  - Stripe API
+  - Gmail API
+  - Allovoisin API
 
-## Déploiement
+## Démarrage Rapide
 
-La vitrine sera déployée sur un hébergement dédié avec certificat SSL pour garantir la sécurité des transactions.
+### Prérequis
+
+- Docker et Docker Compose
+- Kubernetes (pour le déploiement en production)
+- Clés API pour les services externes
+
+### Installation en développement
+
+```bash
+# Cloner le dépôt
+git clone https://github.com/Casius999/vitrine-climatisation-airton-ads.git
+cd vitrine-climatisation-airton-ads
+
+# Lancer les services en développement
+docker-compose up -d
+```
+
+### Déploiement en production
+
+```bash
+# Configuration Kubernetes
+kubectl apply -k kubernetes/production/
+```
 
 ## Responsables du Projet
 

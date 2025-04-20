@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configurator-service
+  namespace: airton-ads
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: configurator-service
+  template:
+    metadata:
+      labels:
+        app: configurator-service
+    spec:
+      containers:
+      - name: configurator-service
+        image: airton-ads/configurator-service:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: configurator-secrets
+              key: mongodb-uri
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configurator-service
+  namespace: airton-ads
+spec:
+  selector:
+    app: configurator-service
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: ClusterIP

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews-service
+  namespace: airton-ads
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: reviews-service
+  template:
+    metadata:
+      labels:
+        app: reviews-service
+    spec:
+      containers:
+      - name: reviews-service
+        image: airton-ads/reviews-service:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            cpu: "0.3"
+            memory: "256Mi"
+          requests:
+            cpu: "0.1"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: reviews-db-secrets
+              key: url
+        - name: ALLOVOISIN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: reviews-api-secrets
+              key: allovoisin-api-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reviews-service
+  namespace: airton-ads
+spec:
+  selector:
+    app: reviews-service
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: ClusterIP

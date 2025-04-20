@@ -1,0 +1,41 @@
+_format_version: "2.1"
+
+services:
+  - name: configurator-service
+    url: http://configurator-service:3000
+    routes:
+      - name: configurator-route
+        paths:
+          - /api/products
+          - /api/options
+          - /api/configure
+          - /api/product
+
+  - name: booking-service
+    url: http://booking-service:8080
+    routes:
+      - name: booking-route
+        paths:
+          - /api/slots
+          - /api/booking
+
+  - name: payment-service
+    url: http://payment-service:3000
+    routes:
+      - name: payment-route
+        paths:
+          - /api/payment
+
+  - name: reviews-service
+    url: http://reviews-service:8000
+    routes:
+      - name: reviews-route
+        paths:
+          - /api/reviews
+
+  - name: notification-service
+    url: http://notification-service:5000
+    routes:
+      - name: notification-route
+        paths:
+          - /api/notify

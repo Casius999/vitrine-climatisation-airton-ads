@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- api-gateway.yaml
+- configurator-service.yaml
+- booking-service.yaml
+- payment-service.yaml
+- reviews-service.yaml
+- notification-service.yaml
+- rabbitmq.yaml
+- redis.yaml
+
+namespace: airton-ads
