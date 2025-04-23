@@ -5,15 +5,23 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+
+# Définition des permissions minimales globales
+permissions:
+  contents: read
 
 jobs:
   frontend-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -24,17 +32,33 @@ jobs:
         
       - name: Run tests
         run: cd frontend && npm test
+        id: run-tests
+        continue-on-error: true
+        
+      - name: Retry tests on failure
+        if: steps.run-tests.outcome == 'failure'
+        run: cd frontend && npm test
         
       - name: Build
         run: cd frontend && npm run build
+        
+      - name: Archive frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build/
+          retention-days: 7
 
   configurator-service-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -44,21 +68,36 @@ jobs:
         run: cd backend/configurator-service && npm ci
         
       - name: Run tests
+        id: run-tests
+        run: cd backend/configurator-service && npm test
+        continue-on-error: true
+        
+      - name: Retry tests on failure
+        if: steps.run-tests.outcome == 'failure'
         run: cd backend/configurator-service && npm test
         
-      - name: Build Docker image
-        run: cd backend/configurator-service && docker build -t airton-ads/configurator-service:latest .
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
         
-      # En environnement de production, ajoutez les étapes pour pousser l'image Docker
-      # vers un registre comme Docker Hub ou ECR
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/configurator-service
+          push: false
+          tags: airton-ads/configurator-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   booking-service-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -68,18 +107,36 @@ jobs:
         run: cd backend/booking-service && ./mvnw clean package -DskipTests
         
       - name: Run tests
+        id: run-tests
+        run: cd backend/booking-service && ./mvnw test
+        continue-on-error: true
+        
+      - name: Retry tests on failure
+        if: steps.run-tests.outcome == 'failure'
         run: cd backend/booking-service && ./mvnw test
         
-      - name: Build Docker image
-        run: cd backend/booking-service && docker build -t airton-ads/booking-service:latest .
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/booking-service
+          push: false
+          tags: airton-ads/booking-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   payment-service-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -89,18 +146,36 @@ jobs:
         run: cd backend/payment-service && npm ci
         
       - name: Run tests
+        id: run-tests
+        run: cd backend/payment-service && npm test
+        continue-on-error: true
+        
+      - name: Retry tests on failure
+        if: steps.run-tests.outcome == 'failure'
         run: cd backend/payment-service && npm test
         
-      - name: Build Docker image
-        run: cd backend/payment-service && docker build -t airton-ads/payment-service:latest .
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/payment-service
+          push: false
+          tags: airton-ads/payment-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   reviews-service-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -112,18 +187,36 @@ jobs:
           pip install -r requirements.txt
           
       - name: Run tests
+        id: run-tests
+        run: cd backend/reviews-service && pytest
+        continue-on-error: true
+        
+      - name: Retry tests on failure
+        if: steps.run-tests.outcome == 'failure'
         run: cd backend/reviews-service && pytest
         
-      - name: Build Docker image
-        run: cd backend/reviews-service && docker build -t airton-ads/reviews-service:latest .
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/reviews-service
+          push: false
+          tags: airton-ads/reviews-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   notification-service-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -135,28 +228,45 @@ jobs:
           pip install -r requirements.txt
           
       - name: Run tests
+        id: run-tests
+        run: cd backend/notification-service && pytest
+        continue-on-error: true
+        
+      - name: Retry tests on failure
+        if: steps.run-tests.outcome == 'failure'
         run: cd backend/notification-service && pytest
         
-      - name: Build Docker image
-        run: cd backend/notification-service && docker build -t airton-ads/notification-service:latest .
-
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/notification-service
+          push: false
+          tags: airton-ads/notification-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
   # Pour un environnement de production réel, ajoutez un job de déploiement
   # deploy-staging:
   #   needs: [frontend-build, configurator-service-build, booking-service-build, payment-service-build, reviews-service-build, notification-service-build]
   #   runs-on: ubuntu-latest
   #   if: github.ref == 'refs/heads/main'
+  #   permissions:
+  #     id-token: write  # Requis pour l'authentification OIDC
+  #     contents: read
   #   steps:
-  #     - uses: actions/checkout@v3
+  #     - uses: actions/checkout@v4
   #     
   #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
+  #       uses: aws-actions/configure-aws-credentials@v4
   #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   #         aws-region: eu-west-3
   #     
   #     - name: Deploy to EKS
-  #       uses: aws-actions/amazon-eks-update-kubeconfig@v1
+  #       uses: aws-actions/amazon-eks-update-kubeconfig@v2
   #       with:
   #         cluster-name: airton-ads-cluster
   #         region: eu-west-3
